@@ -18,19 +18,23 @@
                   <el-button size="mini" type="text" @click="visible = false">取消</el-button>
                   <el-button type="primary" size="mini" @click="logout">确定</el-button>
                 </div>
-                <el-button type="text" slot="reference">{{this.$store.getters.getUser.userName}}</el-button>
+                <el-button type="text" slot="reference">{{ this.$store.getters.getUser.userName }}</el-button>
               </el-popover>
+            </li>
+            <li v-if="this.$store.getters.getUser">
+              <!-- <el-button type="text" @click="changeInfo = true" @click="getOneInfo">修改信息</el-button> -->
+              <el-button type="text" @click="getOneInfo">修改信息</el-button>
             </li>
             <li>
               <router-link to="/order">我的订单</router-link>
             </li>
             <li>
-              <router-link to="/collect">我的收藏</router-link>
+              <router-link to="/collect">历史记录</router-link>
             </li>
             <li :class="getNum > 0 ? 'shopCart-full' : 'shopCart'">
               <router-link to="/shoppingCart">
                 <i class="el-icon-shopping-cart-full"></i> 购物车
-                <span class="num">({{getNum}})</span>
+                <span class="num">({{ getNum }})</span>
               </router-link>
             </li>
           </ul>
@@ -40,21 +44,14 @@
 
       <!-- 顶栏容器 -->
       <el-header>
-        <el-menu
-          :default-active="activeIndex"
-          class="el-menu-demo"
-          mode="horizontal"
-          active-text-color="#409eff"
-          router
-        >
-          <div class="logo">
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" active-text-color="#409eff" router>
+          <!-- <div class="logo">
             <router-link to="/">
               <img src="./assets/imgs/logo.png" alt />
             </router-link>
-          </div>
+          </div> -->
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/goods">全部商品</el-menu-item>
-          <el-menu-item index="/about">关于我们</el-menu-item>
 
           <div class="so">
             <el-input placeholder="请输入搜索内容" v-model="search">
@@ -69,6 +66,8 @@
       <MyLogin></MyLogin>
       <!-- 注册模块 -->
       <MyRegister :register="register" @fromChild="isRegister"></MyRegister>
+      <!-- 修改个人信息模块 -->
+      <MyChangeInfo :changeInfo="changeInfo" @fromChangeInfo="isChangeInfo"></MyChangeInfo>
 
       <!-- 主要区域容器 -->
       <el-main>
@@ -90,20 +89,20 @@
               </p>
             </div>
           </div>
-          <div class="github">
+          <!-- <div class="github">
             <a href="https://atguigu.com" target="_blank">
               <div class="github-but"></div>
             </a>
-          </div>
+          </div> -->
           <div class="mod_help">
-            <p>
+            <!-- <p>
               <router-link to="/">首页</router-link>
               <span>|</span>
               <router-link to="/goods">全部商品</router-link>
               <span>|</span>
               <router-link to="/about">关于我们</router-link>
             </p>
-            <p class="coty">商城版权所有 &copy; 2012-2021</p>
+            <p class="coty">商城版权所有 &copy; 2012-2021</p> -->
           </div>
         </div>
       </el-footer>
@@ -113,8 +112,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+import { mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   beforeUpdate() {
@@ -122,48 +121,38 @@ export default {
   },
   data() {
     return {
-      activeIndex: "", // 头部导航栏选中的标签
-      search: "", // 搜索条件
-      register: false, // 是否显示注册组件
-      visible: false // 是否退出登录
+      activeIndex: '',
+      search: '',
+      register: false,
+      visible: false, // 是否退出登录
+      changeInfo: false,
+      infoBefore: {},
     };
   },
   created() {
     // 获取浏览器localStorage，判断用户是否已经登录
-    if (localStorage.getItem("user")) {
+    if (localStorage.getItem('user')) {
       // 如果已经登录，设置vuex登录状态
-      this.setUser(JSON.parse(localStorage.getItem("user")));
+      this.setUser(JSON.parse(localStorage.getItem('user')));
     }
-    /* window.setTimeout(() => {
-      this.$message({
-        duration: 0,
-        showClose: true,
-        message: `
-        <p>如果觉得这个项目还不错，</p>
-        <p style="padding:10px 0">您可以给项目源代码仓库点Star支持一下，谢谢！</p>
-        <p><a href="http://www.atguigu.com" target="_blank">Github传送门</a></p>`,
-        dangerouslyUseHTMLString: true,
-        type: "success"
-      });
-    }, 1000 * 60); */
   },
   computed: {
-    ...mapGetters(["getUser", "getNum"])
+    ...mapGetters(['getUser', 'getNum', 'getOne']),
   },
   watch: {
     // 获取vuex的登录状态
     getUser: function(val) {
-      if (val === "") {
+      if (val === '') {
         // 用户没有登录
         this.setShoppingCart([]);
       } else {
         // 用户已经登录,获取该用户的购物车信息
         this.$axios
-          .post("/api/cart/list", {
-            user_id: val.user_id
+          .post('/api/cart/list', {
+            user_id: val.user_id,
           })
-          .then(res => {
-            if (res.data.code === "001") {
+          .then((res) => {
+            if (res.data.code === '001') {
               // 001 为成功, 更新vuex购物车状态
               this.setShoppingCart(res.data.data);
             } else {
@@ -171,40 +160,67 @@ export default {
               this.notifyError(res.data.msg);
             }
           })
-          .catch(err => {
+          .catch((err) => {
             return Promise.reject(err);
           });
       }
-    }
+    },
   },
   methods: {
-    ...mapActions(["setUser", "setShowLogin", "setShoppingCart"]),
+    ...mapActions(['setUser', 'setShowLogin', 'setShoppingCart', 'setOne']),
     login() {
       // 点击登录按钮, 通过更改vuex的showLogin值显示登录组件
       this.setShowLogin(true);
     },
+
     // 退出登录
     logout() {
       this.visible = false;
       // 清空本地登录信息
-      localStorage.setItem("user", "");
+      localStorage.setItem('user', '');
       // 清空vuex登录信息
-      this.setUser("");
-      this.notifySucceed("成功退出登录");
+      this.setUser('');
+      this.setOne('');
+      this.notifySucceed('成功退出登录');
     },
     // 接收注册子组件传过来的数据
     isRegister(val) {
       this.register = val;
     },
+    isChangeInfo(val) {
+      this.changeInfo = val;
+    },
     // 点击搜索按钮
     searchClick() {
-      if (this.search != "") {
+      if (this.search != '') {
         // 跳转到全部商品页面,并传递搜索条件
-        this.$router.push({ path: "/goods", query: { search: this.search } });
-        this.search = "";
+        this.$router.push({ path: '/goods', query: { search: this.search } });
+        this.search = '';
       }
-    }
-  }
+    },
+    getOneInfo() {
+      this.changeInfo = true;
+      // this.$axios
+      //   .post('/api/user/getone', {
+      //     user_id: this.getUser.user_id,
+      //   })
+      //   .then((res) => {
+      //     // “001”代表注册成功，其他的均为失败
+      //     if (res.data.code === '001') {
+      //       // 弹出通知框提示注册成功信息
+      //       this.notifySucceed(res.data.msg);
+      //       this.infoBefore = res.data.data;
+      //       this.setOne(res.data.data);
+      //     } else {
+      //       // 弹出通知框提示注册失败信息
+      //       this.notifyError(res.data.msg);
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     return Promise.reject(err);
+      //   });
+    },
+  },
 };
 </script>
 
@@ -333,7 +349,7 @@ a:hover {
   display: inline-block;
   line-height: 40px;
   text-decoration: none;
-  background: url("./assets/imgs/us-icon.png") no-repeat left 0;
+  background: url('./assets/imgs/us-icon.png') no-repeat left 0;
 }
 .footer .github {
   height: 50px;
@@ -344,7 +360,7 @@ a:hover {
   width: 50px;
   height: 50px;
   margin: 0 auto;
-  background: url("./assets/imgs/github.png") no-repeat;
+  background: url('./assets/imgs/github.png') no-repeat;
 }
 .footer .mod_help {
   text-align: center;

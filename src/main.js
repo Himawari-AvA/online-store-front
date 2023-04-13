@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -15,35 +15,35 @@ import Axios from 'axios';
 Vue.prototype.$axios = Axios;
 // 全局请求拦截器
 Axios.interceptors.request.use(
-  config => {
+  (config) => {
     return config;
   },
-  error => {
+  (error) => {
     // 跳转error页面
-    router.push({ path: "/error" });
+    router.push({ path: '/error' });
     return Promise.reject(error);
   }
 );
 // 全局响应拦截器
 Axios.interceptors.response.use(
-  res => {
-    if (res.data.code === "401") {
+  (res) => {
+    if (res.data.code === '401') {
       // 401表示没有登录
       // 提示没有登录
       Vue.prototype.notifyError(res.data.msg);
       // 修改vuex的showLogin状态,显示登录组件
-      store.dispatch("setShowLogin", true);
+      store.dispatch('setShowLogin', true);
     }
-    if (res.data.code === "500") {
+    if (res.data.code === '500') {
       // 500表示服务器异常
       // 跳转error页面
-      router.push({ path: "/error" });
+      router.push({ path: '/error' });
     }
     return res;
   },
-  error => {
+  (error) => {
     // 跳转error页面
-    router.push({ path: "/error" });
+    router.push({ path: '/error' });
     return Promise.reject(error);
   }
 );
@@ -55,10 +55,10 @@ router.beforeResolve((to, from, next) => {
   if (to.meta.requireAuth) {
     if (!loginUser) {
       // 没有登录，显示登录组件
-      store.dispatch("setShowLogin", true);
+      store.dispatch('setShowLogin', true);
       if (from.name == null) {
         //此时，是在页面没有加载，直接在地址栏输入链接，进入需要登录验证的页面
-        next("/");
+        next('/');
         return;
       }
       // 终止导航
@@ -73,7 +73,7 @@ router.beforeResolve((to, from, next) => {
 // 格式: 2020-02-25 21:43:23
 Vue.filter('dateFormat', (dataStr) => {
   var time = new Date(dataStr);
-  function timeAdd0 (str) {
+  function timeAdd0(str) {
     if (str < 10) {
       str = '0' + str;
     }
@@ -97,12 +97,13 @@ import MyLogin from './components/MyLogin';
 Vue.component(MyLogin.name, MyLogin);
 import MyRegister from './components/MyRegister';
 Vue.component(MyRegister.name, MyRegister);
-
+import MyChangeInfo from './components/MyChangeInfo';
+Vue.component(MyChangeInfo.name, MyChangeInfo);
 
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
-  render: h => h(App)
-}).$mount('#app')
+  render: (h) => h(App),
+}).$mount('#app');

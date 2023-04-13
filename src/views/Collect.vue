@@ -2,8 +2,8 @@
  * @Author: Himawari 867415074@qq.com
  * @Date: 2023-02-19 14:06:39
  * @LastEditors: Himawari 867415074@qq.com
- * @LastEditTime: 2023-03-26 16:50:31
- * @FilePath: \vue-store-master\src\views\Collect.vue
+ * @LastEditTime: 2023-03-28 16:10:45
+ * @FilePath: \online-store-front\src\views\Collect.vue
  * @Description: new file
  * 1
  * Copyright (c) 2023 by ${git_name_email}, All Rights Reserved.
@@ -14,7 +14,7 @@
     <div class="collect-header">
       <div class="collect-title">
         <i class="el-icon-collection-tag" style="color: #ff6700;"></i>
-        我的收藏
+        历史记录
       </div>
     </div>
     <div class="content">
@@ -24,7 +24,7 @@
       <!-- 收藏列表为空的时候显示的内容 -->
       <div v-else class="collect-empty">
         <div class="empty">
-          <h2>您的收藏还是空的！</h2>
+          <h2>您的历史记录还是空的！</h2>
           <p>快去购物吧！</p>
         </div>
       </div>

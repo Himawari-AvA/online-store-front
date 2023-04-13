@@ -2,8 +2,8 @@
  * @Description: 首页css样式
  * @Author: hai-27
  * @Date: 2020-02-07 16:23:00
- * @LastEditors: hai-27
- * @LastEditTime: 2020-02-27 00:46:58
+ * @LastEditors: Himawari 867415074@qq.com
+ * @LastEditTime: 2023-04-13 16:19:06
  */
 
 .main-box {
@@ -60,12 +60,13 @@
 }
 
 .box-bd {
-  height: 615px;
+  height: 315px;
+  margin-left: -13.7px;
 }
 
 .box-bd .promo-list {
   float: left;
-  height: 615px;
+  height: 315px;
   width: 234px;
 }
 
@@ -80,8 +81,8 @@
 
 .box-bd .promo-list li:hover {
   z-index: 2;
-  -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, .1);
+  -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   -webkit-transform: translate3d(0, -2px, 0);
   transform: translate3d(0, -2px, 0);
 }
@@ -97,6 +98,6 @@
 
 .box-bd .list {
   float: left;
-  height: 615px;
-  width: 991px;
+  height: 315px;
+  width: 1240px;
 }
