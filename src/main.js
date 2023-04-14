@@ -89,8 +89,6 @@ Vue.filter('dateFormat', (dataStr) => {
 });
 
 //全局组件
-import MyMenu from './components/MyMenu';
-Vue.component(MyMenu.name, MyMenu);
 import MyList from './components/MyList';
 Vue.component(MyList.name, MyList);
 import MyLogin from './components/MyLogin';

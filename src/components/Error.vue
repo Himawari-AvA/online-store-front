@@ -1,13 +1,8 @@
-<!--
- * @Description: 
- * @Author: hai-27
- * @Date: 2020-02-27 13:57:14
- * @LastEditors: hai-27
- * @LastEditTime: 2020-02-27 14:11:31
- -->
 <template>
   <div class="error">
-    <div class="main"></div>
+    <div class="main">
+      服务器正在开小差,请稍后重试
+    </div>
   </div>
 </template>
 <style>
@@ -17,8 +12,10 @@
   margin: 0 auto;
 }
 .error .main {
-  margin: 0 362.5px;
-  height: 500px;
-  background: url(../assets/imgs/error.png) no-repeat;
+  height: 300px;
+  width: 330px;
+  margin: 30px auto;
+  color: #b0b0b0;
+  overflow: hidden;
 }
 </style>

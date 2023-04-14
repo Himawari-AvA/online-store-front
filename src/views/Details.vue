@@ -322,7 +322,7 @@ export default {
           '  </span>\n' +
           '  </div>\n' +
           '  <div class="el-col el-col-22" style="text-align: left; padding-left: 10px">\n' +
-          '    <div class="tip right">' +
+          '    <div class="tip talkright">' +
           text +
           '</div>\n' +
           '  </div>\n' +
@@ -540,6 +540,9 @@ export default {
 }
 
 .right {
+  background-color: white;
+}
+.talkright {
   background-color: deepskyblue;
 }
 .left {

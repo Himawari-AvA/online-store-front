@@ -17,12 +17,19 @@
       <!-- 选择地址 -->
       <div class="section-address">
         <p class="title">收货地址</p>
-        <font color="red" size="2">提示:双击可以删除地址!</font>
-        <br />
         <br />
         <div class="address-body">
           <ul>
-            <li v-for="(item, index) in address" :class="confirmAddress == item.id ? 'in-section' : ''" :key="item.id" @click="confirmAddress = item.id" @dblclick="removeItem(index)">
+            <li
+              v-for="(item, index) in address"
+              :class="confirmAddress == item.id ? 'in-section' : ''"
+              :key="item.id"
+              @click="confirmAddress = item.id"
+              @dblclick="removeItem(index)"
+              class="addresscard"
+            >
+              <i class="el-icon-close delete" slot="reference" @click="removeItem(index)"></i>
+
               <h2>{{ item.linkman }}</h2>
               <p class="phone">{{ item.phone }}</p>
               <p class="address">
@@ -41,7 +48,7 @@
 
       <!-- 商品及优惠券 -->
       <div class="section-goods">
-        <p class="title">商品及优惠券</p>
+        <p class="title">商品</p>
         <div class="goods-list">
           <ul>
             <li v-for="item in getCheckGoods" :key="item.id">
@@ -63,15 +70,6 @@
       </div>
       <!-- 配送方式END -->
 
-      <!-- 发票 -->
-      <div class="section-invoice">
-        <p class="title">发票</p>
-        <p class="invoice">电子发票</p>
-        <p class="invoice">个人</p>
-        <p class="invoice">商品明细</p>
-      </div>
-      <!-- 发票END -->
-
       <!-- 结算列表 -->
       <div class="section-count">
         <div class="money-box">
@@ -84,14 +82,7 @@
               <span class="title">商品总价：</span>
               <span class="value">{{ getTotalPrice }}元</span>
             </li>
-            <li>
-              <span class="title">活动优惠：</span>
-              <span class="value">-0元</span>
-            </li>
-            <li>
-              <span class="title">优惠券抵扣：</span>
-              <span class="value">-0元</span>
-            </li>
+
             <li>
               <span class="title">运费：</span>
               <span class="value">0元</span>
@@ -121,7 +112,8 @@
 
     <!-- 删除 popover框-->
 
-    <el-dialog title="删除提示!" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <!-- <el-dialog title="删除提示!" :visible.sync="dialogVisible" width="30%" :before-close="handleClose"> -->
+    <el-dialog title="地址删除确认" :visible.sync="dialogVisible" width="30%">
       <span>
         <font color="red">{{ dialogValue }}</font></span
       >
@@ -139,7 +131,7 @@
           <el-input prefix-icon="el-icon-user-solid" placeholder="请输入收件人姓名!" v-model="linkman" maxlength="20" show-word-limit></el-input>
         </el-form-item>
         <el-form-item prop="phone">
-          <el-input prefix-icon="el-icon-view" type="text" placeholder="请输入收件人电话" v-model="phone" maxlength="11" show-word-limit></el-input>
+          <el-input prefix-icon="el-icon-phone" type="text" placeholder="请输入收件人电话" v-model="phone" maxlength="11" show-word-limit></el-input>
         </el-form-item>
         <el-form-item prop="address">
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 4 }" placeholder="请输入详细地址" v-model="addressss"> </el-input>
@@ -150,13 +142,28 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 支付二维码弹窗 -->
+    <el-dialog title="下单成功,请支付" width="300px" center :visible.sync="showPayInfo" @close="toOrderPage">
+      <div class="code">
+        <qrCode :price="getTotalPrice"></qrCode>
+      </div>
+      <div class="code-button">
+        <el-button class="code-button1" @click="toOrderPage">返回订单</el-button>
+        <el-button class="code-button2" @click="paySuccess">支付成功</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { mapGetters } from 'vuex';
 import { mapActions } from 'vuex';
+import qrCode from '../components/qrcode.vue';
 export default {
   name: '',
+  components: {
+    qrCode,
+  },
   data() {
     return {
       // 虚拟数据
@@ -175,9 +182,11 @@ export default {
       linkman: '',
       phone: '',
       addressss: '',
+      showPayInfo: false,
 
       // 地址列表
       address: [],
+      backOrderId: '',
     };
   },
   created() {
@@ -203,6 +212,7 @@ export default {
     // 结算的商品数量; 结算商品总计; 结算商品信息
     ...mapGetters(['getCheckNum', 'getTotalPrice', 'getCheckGoods']),
   },
+  watch: {},
   methods: {
     ...mapActions(['deleteShoppingCart']),
 
@@ -255,7 +265,7 @@ export default {
               this.isAdd = false; //隐藏弹出框
               this.address = res.data.data; //接收新地址内容
               // 提示结算结果
-              this.notifySucceed(res.data.msg);
+              // this.notifySucceed(res.data.msg);
               break;
             default:
               // 提示失败信息
@@ -267,10 +277,12 @@ export default {
         });
     },
     addOrder() {
+      this.showPayInfo = true;
       this.$axios
         .post('/api/order/save', {
           user_id: this.$store.getters.getUser.user_id,
           products: this.getCheckGoods,
+          address_id: this.confirmAddress,
         })
         .then((res) => {
           let products = this.getCheckGoods;
@@ -283,8 +295,38 @@ export default {
                 this.deleteShoppingCart(temp.id);
               }
               // 提示结算结果
+              this.backOrderId = res.data.data;
               this.notifySucceed(res.data.msg);
               // 跳转我的订单页面
+              // this.$router.push({ path: '/order' });
+              break;
+            default:
+              // 提示失败信息
+              this.notifyError(res.data.msg);
+          }
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+    },
+
+    toOrderPage() {
+      this.showPayInfo = false;
+      this.$router.push({ path: '/order' });
+    },
+    paySuccess() {
+      this.$axios
+        .post('/api/order/pay', {
+          order_id: this.backOrderId,
+        })
+        .then((res) => {
+          switch (res.data.code) {
+            // “001”代表结算成功
+            case '001':
+              // 提示结算结果
+              this.notifySucceed(res.data.msg);
+              // 跳转我的订单页面
+              this.showPayInfo = false;
               this.$router.push({ path: '/order' });
               break;
             default:
@@ -346,7 +388,7 @@ export default {
   color: #333;
   font-size: 18px;
   line-height: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .confirmOrder .content .address-body li {
   float: left;
@@ -550,6 +592,41 @@ export default {
   background: #ff6700;
   border-color: #ff6700;
   color: #fff;
+}
+
+.delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+}
+li:hover .delete {
+  display: block;
+}
+li .delete:hover {
+  color: #ff6700;
+}
+
+.addresscard {
+  position: relative;
+}
+
+.code {
+  width: 200px;
+  height: 230px;
+  margin: 0 auto;
+}
+
+.code-button {
+  width: 280px;
+  margin: 0 auto;
+}
+
+.code-button1 {
+  margin-left: 10px;
+}
+.code-button2 {
+  margin-right: 10px;
 }
 /* 结算导航CSS */
 

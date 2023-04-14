@@ -1,6 +1,6 @@
 <template>
   <div id="register">
-    <el-dialog title="修改信息" width="300px" center :visible.sync="isChangeInfo">
+    <el-dialog title="修改信息" width="330px" center :visible.sync="isChangeInfo">
       <el-form :model="infoChange" :rules="rules" status-icon ref="ruleForm" class="demo-ruleForm">
         <el-form-item prop="name">
           <el-input prefix-icon="el-icon-user-solid" placeholder="请输入用户名" v-model="infoChange.name"></el-input>
@@ -12,7 +12,7 @@
           <el-input prefix-icon="el-icon-view" type="password" placeholder="请再次输入密码" v-model="infoChange.confirmPass"></el-input>
         </el-form-item>
         <el-form-item prop="phone">
-          <el-input prefix-icon="el-icon-view" placeholder="请输入手机号" v-model="infoChange.phone"></el-input>
+          <el-input prefix-icon="el-icon-phone" placeholder="请输入手机号" v-model="infoChange.phone">手机号</el-input>
         </el-form-item>
         <el-form-item>
           <el-button size="medium" type="primary" @click="updateInfo" style="width:100%;">修改</el-button>
@@ -110,11 +110,22 @@ export default {
     // 监听父组件传过来的register变量，设置this.isRegister的值
     changeInfo: function(val) {
       if (val) {
+        if (JSON.stringify(this.getOne) === '{}') {
+          new Promise(() => {
+            this.getOneAllInfo();
+          }).then(() => {
+            this.infoChange.name = this.getOne.userName;
+            this.infoChange.pass = this.getOne.password;
+            this.infoChange.confirmPass = this.getOne.password;
+            this.infoChange.phone = this.getOne.userPhonenumber;
+          });
+        } else {
+          this.infoChange.name = this.getOne.userName;
+          this.infoChange.pass = this.getOne.password;
+          this.infoChange.confirmPass = this.getOne.password;
+          this.infoChange.phone = this.getOne.userPhonenumber;
+        }
         this.isChangeInfo = val;
-        this.infoChange.name = this.getOne.userName;
-        this.infoChange.pass = this.getOne.password;
-        this.infoChange.confirmPass = this.getOne.password;
-        this.infoChange.phone = this.getOne.userPhonenumber;
       }
     },
     // 监听this.isRegister变量的值，更新父组件register变量的值
@@ -122,16 +133,32 @@ export default {
       if (!val) {
         this.$emit('fromChangeInfo', val);
       } else {
-        this.$refs['ruleForm'].resetFields();
-        this.infoChange.name = this.getOne.userName;
-        this.infoChange.pass = this.getOne.password;
-        this.infoChange.confirmPass = this.getOne.password;
-        this.infoChange.phone = this.getOne.userPhonenumber;
+        // this.$refs['ruleForm'].resetFields();
+        this.$refs.ruleForm.resetFields();
+        // this.infoChange.name = this.getOne.userName;
+        // this.infoChange.pass = this.getOne.password;
+        // this.infoChange.confirmPass = this.getOne.password;
+        // this.infoChange.phone = this.getOne.userPhonenumber;
+        if (JSON.stringify(this.getOne) === '{}') {
+          new Promise(() => {
+            this.getOneAllInfo();
+          }).then(() => {
+            this.infoChange.name = this.getOne.userName;
+            this.infoChange.pass = this.getOne.password;
+            this.infoChange.confirmPass = this.getOne.password;
+            this.infoChange.phone = this.getOne.userPhonenumber;
+          });
+        } else {
+          this.infoChange.name = this.getOne.userName;
+          this.infoChange.pass = this.getOne.password;
+          this.infoChange.confirmPass = this.getOne.password;
+          this.infoChange.phone = this.getOne.userPhonenumber;
+        }
       }
     },
   },
   methods: {
-    ...mapActions(['setUser', 'setShowLogin', 'setShoppingCart']),
+    ...mapActions(['setUser', 'setShowLogin', 'setShoppingCart', 'setOne']),
     updateInfo() {
       // 通过element自定义表单校验规则，校验用户输入的用户信息
       this.$refs['ruleForm'].validate((valid) => {
@@ -175,16 +202,38 @@ export default {
       this.setUser('');
       this.notifySucceed('成功退出登录');
     },
+    getOneAllInfo() {
+      // console.log('---------3------------------' + this.userId);
+      this.$axios
+        .post('/api/user/getone', {
+          user_id: this.getUser.user_id,
+        })
+        .then((res) => {
+          // “001”代表注册成功，其他的均为失败
+          console.log(res.data);
+          if (res.data.code === '001') {
+            // this.notifySucceed(res.data.msg);
+            this.setOne(res.data.data);
+            this.infoChange.name = this.getOne.userName;
+            this.infoChange.pass = this.getOne.password;
+            this.infoChange.confirmPass = this.getOne.password;
+            this.infoChange.phone = this.getOne.userPhonenumber;
+          } else {
+            this.notifyError(res.data.msg);
+          }
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+    },
   },
   computed: {
     ...mapGetters(['getUser', 'getNum', 'getOne']),
   },
-  // created() {
-  //   this.infoChange.name = this.getOne.userName;
-  //   this.infoChange.pass = this.getOne.password;
-  //   this.infoChange.confirmPass = this.getOne.password;
-  //   this.infoChange.phone = this.getOne.userPhonenumber;
-  // },
+  created() {
+    // this.isChangeInfo = val;
+    // getOneAllInfo();
+  },
 };
 </script>
 <style></style>

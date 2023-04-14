@@ -36,7 +36,7 @@
       <el-form ref="form" label-width="80px">
         <el-form-item label="您的偏好">
           <el-checkbox-group v-model="form">
-            <el-checkbox label="手机"></el-checkbox>
+            <!-- <el-checkbox label="手机"></el-checkbox>
             <el-checkbox label="电视机"></el-checkbox>
             <el-checkbox label="空调"></el-checkbox>
             <el-checkbox label="洗衣机"></el-checkbox>
@@ -44,7 +44,8 @@
             <el-checkbox label="保护膜"></el-checkbox>
             <el-checkbox label="充电器"></el-checkbox>
             <el-checkbox label="充电宝"></el-checkbox>
-            <el-checkbox label="饮料"></el-checkbox>
+            <el-checkbox label="饮料"></el-checkbox> -->
+            <el-checkbox :label="item.category_name" v-for="(item, index) in categoryList" :key="index"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -68,13 +69,21 @@ export default {
       showPreferenceList: false, //展示偏好问卷
       // form: ['手机', '电视机', '空调', '洗衣机', '保护套'],
       form: [],
-      allform: ['', '手机', '电视机', '空调', '洗衣机', '保护套', '保护膜', '充电器', '充电宝', '饮料'],
+      // allform: ['', '手机', '电视机', '空调', '洗衣机', '保护套', '保护膜', '充电器', '充电宝', '饮料'],
+      categoryList: '', //分类列表
     };
   },
   computed: {
     ...mapGetters(['getUser']),
     userId() {
       return this.getUser.user_id;
+    },
+    allform() {
+      const map1 = new Map();
+      this.categoryList.forEach((category) => {
+        map1.set(category.category_name, category.category_id);
+      });
+      return map1;
     },
   },
   watch: {
@@ -120,6 +129,7 @@ export default {
             this.preferenceList = res.data.data;
           } else if (res.data.code == '004') {
             this.showPreferenceList = true;
+            this.getCategory();
           }
         })
         .catch((err) => {
@@ -137,7 +147,8 @@ export default {
     uploadPreferenceData() {
       // this.dialogVisible = false;
       this.form.forEach((element) => {
-        let num = this.allform.indexOf(element);
+        // let num = this.allform.indexOf(element);
+        let num = this.allform.get(element);
         // console.log(num);
         this.$axios
           .post('/api/user/addpreference', {
@@ -157,6 +168,18 @@ export default {
       this.getPreference(this.userId);
       this.form = [];
       this.showPreferenceList = false;
+    },
+    getCategory() {
+      console.log('getCategory()');
+      this.$axios
+        .post('/api/product/category/list', {})
+        .then((res) => {
+          const cate = res.data.data;
+          this.categoryList = cate;
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
     },
   },
 };

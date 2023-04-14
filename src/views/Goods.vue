@@ -1,10 +1,3 @@
-<!--
- * @Description: 全部商品页面组件(包括全部商品,商品分类,商品搜索)
- * @Author: hai-27
- * @Date: 2020-02-07 16:23:00
- * @LastEditors: Himawari 867415074@qq.com
- * @LastEditTime: 2023-04-13 20:57:13
- -->
 <template>
   <div class="goods" id="goods" name="goods">
     <!-- 面包屑 -->

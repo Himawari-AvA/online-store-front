@@ -29,7 +29,7 @@
               <router-link to="/order">我的订单</router-link>
             </li>
             <li>
-              <router-link to="/collect">历史记录</router-link>
+              <router-link to="/history">历史记录</router-link>
             </li>
             <li :class="getNum > 0 ? 'shopCart-full' : 'shopCart'">
               <router-link to="/shoppingCart">
@@ -45,11 +45,6 @@
       <!-- 顶栏容器 -->
       <el-header>
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" active-text-color="#409eff" router>
-          <!-- <div class="logo">
-            <router-link to="/">
-              <img src="./assets/imgs/logo.png" alt />
-            </router-link>
-          </div> -->
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/goods">全部商品</el-menu-item>
 
@@ -311,12 +306,12 @@ a:hover {
   max-width: 1225px;
   margin: 0 auto;
 }
-.el-header .logo {
+/* .el-header .logo {
   height: 60px;
   width: 189px;
   float: left;
   margin-right: 100px;
-}
+} */
 .el-header .so {
   margin-top: 10px;
   width: 300px;

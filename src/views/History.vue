@@ -2,8 +2,8 @@
  * @Author: Himawari 867415074@qq.com
  * @Date: 2023-02-19 14:06:39
  * @LastEditors: Himawari 867415074@qq.com
- * @LastEditTime: 2023-03-28 16:10:45
- * @FilePath: \online-store-front\src\views\Collect.vue
+ * @LastEditTime: 2023-04-14 17:33:03
+ * @FilePath: \online-store-front\src\views\History.vue
  * @Description: new file
  * 1
  * Copyright (c) 2023 by ${git_name_email}, All Rights Reserved.
@@ -73,7 +73,7 @@ export default {
   font-size: 28px;
 }
 .collect .content {
-  padding: 20px 0;
+  /* padding: 20px 0; */
   width: 1225px;
   margin: 0 auto;
 }
@@ -88,19 +88,19 @@ export default {
 }
 .collect .collect-empty .empty {
   height: 300px;
-  padding: 0 0 130px 558px;
-  margin: 65px 0 0;
-  background: url(../assets/imgs/cart-empty.png) no-repeat 124px 0;
+  margin: 30px auto;
   color: #b0b0b0;
   overflow: hidden;
 }
 .collect .collect-empty .empty h2 {
-  margin: 70px 0 15px;
+  width: 400px;
+  margin: 30px auto;
   font-size: 36px;
 }
 .collect .collect-empty .empty p {
-  margin: 0 0 20px;
   font-size: 20px;
+  width: 170px;
+  margin: 30px auto;
 }
 /* 收藏列表为空的时候显示的内容CSS END */
 </style>

@@ -1,10 +1,14 @@
 /*
- * @Description: 用户登录状态模块
- * @Author: hai-27
- * @Date: 2020-02-19 17:42:11
+ * @Author: Himawari 867415074@qq.com
+ * @Date: 2023-02-19 14:06:39
  * @LastEditors: Himawari 867415074@qq.com
- * @LastEditTime: 2023-03-28 16:47:18
+ * @LastEditTime: 2023-04-14 17:45:42
+ * @FilePath: \online-store-front\src\store\modules\user.js
+ * @Description: 用户登录状态仓库
+ * 1
+ * Copyright (c) 2023 by ${git_name_email}, All Rights Reserved.
  */
+
 export default {
   state: {
     user: '', // 登录的用户
