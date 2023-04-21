@@ -50,7 +50,7 @@
           <li class="product-list" v-for="(product, i) in item" :key="i">
             <div class="pro-img">
               <router-link :to="{ path: '/goods/details', query: { productID: product.product_id } }">
-                <img :src="$target + product.product_picture" />
+                <img :src="product.product_picture.includes('http:') ? product.product_picture : $target + product.product_picture" />
               </router-link>
             </div>
             <div class="pro-name">

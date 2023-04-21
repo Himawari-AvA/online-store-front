@@ -44,7 +44,7 @@
       <div class="content">
         <h1 class="name">{{ productDetails.product_name }}</h1>
         <p class="intro">{{ productDetails.product_intro }}</p>
-        <p class="store">小米自营</p>
+        <p class="store">自营</p>
         <div class="price">
           <span>{{ productDetails.product_selling_price }}元</span>
           <span v-show="productDetails.product_price != productDetails.product_selling_price" class="del">{{ productDetails.product_price }}元</span>
@@ -104,7 +104,6 @@ export default {
       productDetails: '', // 商品详细信息
       productPicture: '', // 商品图片
       drawer: false,
-      circleUrl: 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
       user: {},
       isCollapse: false,
       users: [],
@@ -113,6 +112,7 @@ export default {
       messages: [],
       content: '',
       username: '',
+      kefuzaixian: false,
     };
   },
   computed: {
@@ -124,7 +124,8 @@ export default {
       this.productID = this.$route.query.productID;
     }
     this.username = this.getUser.userName;
-    this.chatUser = 'admin111';
+    // this.chatUser = 'admin111';
+    this.chatUser = '测试111';
   },
   watch: {
     // 监听商品id的变化，请求后端获取商品数据
@@ -270,8 +271,12 @@ export default {
     },
 
     send() {
+      if (!this.kefuzaixian) {
+        this.$message({ type: 'warning', message: '暂无客服在线,请稍后重试' });
+        return;
+      }
       if (!this.chatUser) {
-        this.$message({ type: 'warning', message: '请选择聊天对象' });
+        this.$message({ type: 'warning', message: '暂无客服在线,请稍后重试' });
         return;
       }
       if (!this.text) {
@@ -308,7 +313,7 @@ export default {
           '  </div>\n' +
           '  <div class="el-col el-col-2">\n' +
           '  <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">\n' +
-          '    <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" style="object-fit: cover;">\n' +
+          '    <img src="http://localhost:3000/public/imgs/custom/yonghu.jpg" style="object-fit: cover;">\n' +
           '  </span>\n' +
           '  </div>\n' +
           '</div>';
@@ -318,7 +323,7 @@ export default {
           '<div class="el-row" style="padding: 5px 0">\n' +
           '  <div class="el-col el-col-2" style="text-align: right">\n' +
           '  <span class="el-avatar el-avatar--circle" style="height: 40px; width: 40px; line-height: 40px;">\n' +
-          '    <img src="https://tse4-mm.cn.bing.net/th/id/OIP-C.wEHDpBxnsAawWH0voAIg2gAAAA?pid=ImgDet&rs=1" style="object-fit: cover;">\n' +
+          '    <img src="http://localhost:3000/public/imgs/custom/kefu.jpg" style="object-fit: cover;">\n' +
           '  </span>\n' +
           '  </div>\n' +
           '  <div class="el-col el-col-22" style="text-align: left; padding-left: 10px">\n' +
@@ -359,6 +364,14 @@ export default {
           if (data.users) {
             // 获取在线人员信息
             _this.users = data.users.filter((user) => user.username !== username); // 获取当前连接的所有用户信息，并且排除自身，自己不会出现在自己的聊天列表里
+            _this.kefuzaixian = false;
+            _this.users.find(function(currentValue) {
+              if (currentValue.username.indexOf('admin') != -1) {
+                _this.kefuzaixian = true;
+                _this.chatUser = currentValue.username;
+                return true;
+              }
+            });
           } else {
             // 如果服务器端发送过来的json数据 不包含 users 这个key，那么发送过来的就是聊天文本json数据
             //  // {"from": "zhang", "text": "hello"}

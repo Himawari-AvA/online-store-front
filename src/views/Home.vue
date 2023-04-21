@@ -18,7 +18,7 @@
           <div class="box-hd">
             <div class="title">猜你喜欢</div>
             <div class="more" id="more">
-              <MyMenu :val="3" @fromChild="getChildMsg2"> </MyMenu>
+              <!-- <MyMenu :val="3" @fromChild="getChildMsg2"> </MyMenu> -->
             </div>
           </div>
           <div class="box-bd">
@@ -109,9 +109,11 @@ export default {
       });
 
     // this.checkPrefer();
-    // if (this.userId) {
-    this.getPreference(this.userId);
-    // }
+    if (this.userId) {
+      this.getPreference(this.userId);
+    } else {
+      this.setBasePreference();
+    }
   },
   methods: {
     // 获取配件模块子组件传过来的数据
@@ -127,6 +129,10 @@ export default {
         .then((res) => {
           if (res.data.code == '001') {
             this.preferenceList = res.data.data;
+            if (this.preferenceList.length > 5) {
+              // this.preferenceList.pop();
+              this.preferenceList = this.preferenceList.slice(0, 5);
+            }
           } else if (res.data.code == '004') {
             this.showPreferenceList = true;
             this.getCategory();
@@ -136,7 +142,65 @@ export default {
           return Promise.reject(err);
         });
     },
-    setBasePreference() {},
+    setBasePreference() {
+      // this.$axios
+      //   .post('/api/product/getpreference', {
+      //     category_id: 7,
+      //   })
+      //   .then((res) => {
+      //     if (res.data.code == '001') {
+      //       console.log(res);
+      //       console.log(res.data);
+      //       this.preferenceList = res.data;
+      //     }
+      //   })
+      //   .then(() => {
+      //     this.$axios.post('/api/product/getpreference', {
+      //       category_id: 8,
+      //     });
+      //   })
+      //   .then((res) => {
+      //     this.preferenceList = this.preferenceList.concat(res.data);
+      //     if (this.preferenceList.length > 5) {
+      //       this.preferenceList.pop();
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     return Promise.reject(err);
+      //   });
+      let basePreferenceArray = [];
+      console.log('进入setBasePreference');
+      let post1 = this.$axios
+        .post('/api/product/getpreference', {
+          category_id: 7,
+        })
+        .then((res) => {
+          console.log(res.data);
+          basePreferenceArray = basePreferenceArray.concat(res.data);
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+
+      let post2 = this.$axios
+        .post('/api/product/getpreference', {
+          category_id: 5,
+        })
+        .then((res) => {
+          console.log(res.data);
+          basePreferenceArray = basePreferenceArray.concat(res.data);
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+      Promise.all([post1, post2])
+        .then(() => {
+          this.preferenceList = basePreferenceArray;
+        })
+        .catch((err) => {
+          return Promise.reject(err);
+        });
+    },
     handleClose(done) {
       this.$confirm('关闭后将无法为您推荐感兴趣的商品,确认关闭吗?')
         .then(() => {
@@ -157,7 +221,7 @@ export default {
             frequency: 10,
           })
           .then((res) => {
-            // console.log('用户偏好推荐成功');
+            console.log('用户偏好推荐成功');
             console.log(res.data);
             // this.getPreference(this.userId);
           })
@@ -165,9 +229,11 @@ export default {
             return Promise.reject(err);
           });
       });
-      this.getPreference(this.userId);
-      this.form = [];
       this.showPreferenceList = false;
+      this.form = [];
+      setTimeout(() => {
+        this.getPreference(this.userId);
+      }, 1000);
     },
     getCategory() {
       console.log('getCategory()');
@@ -176,6 +242,9 @@ export default {
         .then((res) => {
           const cate = res.data.data;
           this.categoryList = cate;
+          // if (this.categoryList.length > 5) {
+          // this.categoryList.pop();
+          // }
         })
         .catch((err) => {
           return Promise.reject(err);

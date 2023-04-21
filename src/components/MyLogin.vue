@@ -97,7 +97,7 @@ export default {
                 // 登录信息存到vuex
                 this.setUser(res.data.data);
                 this.userId = res.data.data.user_id;
-                console.log('---------1------------------');
+                // console.log('---------1------------------');
                 // 弹出通知框提示登录成功信息
                 this.notifySucceed(res.data.msg);
               } else {
@@ -108,7 +108,7 @@ export default {
               }
             })
             .then(() => {
-              console.log('---------2------------------' + this.userId);
+              // console.log('---------2------------------' + this.userId);
               this.getOne();
             })
 
@@ -122,7 +122,7 @@ export default {
     },
 
     getOne() {
-      console.log('---------3------------------' + this.userId);
+      // console.log('---------3------------------' + this.userId);
       this.$axios
         .post('/api/user/getone', {
           user_id: this.userId,
