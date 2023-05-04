@@ -23,7 +23,7 @@
           </div>
           <div class="box-bd">
             <div class="list">
-              <MyList :list="preferenceList" :isMore="false"></MyList>
+              <MyList :list="preferenceList.slice(0,5)" :isMore="false"></MyList>
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default {
             this.preferenceList = res.data.data;
             if (this.preferenceList.length > 5) {
               // this.preferenceList.pop();
-              this.preferenceList = this.preferenceList.slice(0, 5);
+              // this.preferenceList = this.preferenceList.slice(0, 5);
             }
           } else if (res.data.code == '004') {
             this.showPreferenceList = true;

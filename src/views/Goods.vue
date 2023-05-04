@@ -69,6 +69,7 @@ export default {
       sortAsPrice: 0,
       sortAsSales: 0,
       productBackUp: '',
+      sortKind: 0,
     };
   },
   created() {
@@ -192,12 +193,28 @@ export default {
     // 向后端请求全部商品或分类商品数据
     getData() {
       // 如果分类列表为空则请求全部商品数据，否则请求分类商品数据
+      if (this.sortAsPrice != 0) {
+        if (this.sortAsPrice == 1) {
+          this.sortKind = 1; //按价格增序
+        } else {
+          this.sortKind = 2; //按价格降序
+        }
+      }
+      if (this.sortAsSales != 0) {
+        if (this.sortAsSales == 1) {
+          this.sortKind = 3; //按销量增序
+        } else {
+          this.sortKind = 4; //按销量降序
+        }
+      }
+
       const api = this.categoryID.length == 0 ? '/api/product/all' : '/api/product/bycategory';
       this.$axios
         .post(api, {
           categoryID: this.categoryID,
           currentPage: this.currentPage,
           pageSize: this.pageSize,
+          sortKind: this.sortKind,
         })
         .then((res) => {
           this.product = res.data.data;
@@ -210,11 +227,26 @@ export default {
     },
     // 通过搜索条件向后端请求商品数据
     getProductBySearch() {
+      if (this.sortAsPrice != 0) {
+        if (this.sortAsPrice == 1) {
+          this.sortKind = 1; //按价格增序
+        } else {
+          this.sortKind = 2; //按价格降序
+        }
+      }
+      if (this.sortAsSales != 0) {
+        if (this.sortAsSales == 1) {
+          this.sortKind = 3; //按销量增序
+        } else {
+          this.sortKind = 4; //按销量降序
+        }
+      }
       this.$axios
         .post('/api/product/search', {
           search: this.search,
           currentPage: this.currentPage,
           pageSize: this.pageSize,
+          sortKind: this.sortKind,
         })
         .then((res) => {
           this.product = res.data.data;
@@ -232,22 +264,30 @@ export default {
         this.sortAsPrice = -this.sortAsPrice;
       } else {
         this.sortAsPrice = 0;
+        this.sortKind = 0;
       }
       // 按价格增序
-      if (this.sortAsPrice == 1) {
-        this.product.sort((a, b) => {
-          let val1 = a.product_selling_price;
-          let val2 = b.product_selling_price;
-          return val1 - val2;
-        });
-      } else if (this.sortAsPrice == -1) {
-        this.product.sort((a, b) => {
-          let val1 = a.product_selling_price;
-          let val2 = b.product_selling_price;
-          return val2 - val1;
-        });
-      } else {
-        this.product = JSON.parse(JSON.stringify(this.productBackUp));
+      // if (this.sortAsPrice == 1) {
+      //   this.product.sort((a, b) => {
+      //     let val1 = a.product_selling_price;
+      //     let val2 = b.product_selling_price;
+      //     return val1 - val2;
+      //   });
+      // } else if (this.sortAsPrice == -1) {
+      //   this.product.sort((a, b) => {
+      //     let val1 = a.product_selling_price;
+      //     let val2 = b.product_selling_price;
+      //     return val2 - val1;
+      //   });
+      // } else {
+      //   this.product = JSON.parse(JSON.stringify(this.productBackUp));
+      // }
+      if (this.$route.path == '/goods') {
+        if (this.$route.query.search != undefined) {
+          this.getProductBySearch();
+        } else {
+          this.getData();
+        }
       }
     },
     salesSort() {
@@ -258,23 +298,32 @@ export default {
         this.sortAsSales = -this.sortAsSales;
       } else {
         this.sortAsSales = 0;
+        this.sortKind = 0;
       }
 
       // 按销量增序
-      if (this.sortAsSales == 1) {
-        this.product.sort((a, b) => {
-          let val1 = a.product_sales;
-          let val2 = b.product_sales;
-          return val1 - val2;
-        });
-      } else if (this.sortAsSales == -1) {
-        this.product.sort((a, b) => {
-          let val1 = a.product_sales;
-          let val2 = b.product_sales;
-          return val2 - val1;
-        });
-      } else {
-        this.product = JSON.parse(JSON.stringify(this.productBackUp));
+      // if (this.sortAsSales == 1) {
+      //   this.product.sort((a, b) => {
+      //     let val1 = a.product_sales;
+      //     let val2 = b.product_sales;
+      //     return val1 - val2;
+      //   });
+      // } else if (this.sortAsSales == -1) {
+      //   this.product.sort((a, b) => {
+      //     let val1 = a.product_sales;
+      //     let val2 = b.product_sales;
+      //     return val2 - val1;
+      //   });
+      // } else {
+      //   this.product = JSON.parse(JSON.stringify(this.productBackUp));
+      // }
+
+      if (this.$route.path == '/goods') {
+        if (this.$route.query.search != undefined) {
+          this.getProductBySearch();
+        } else {
+          this.getData();
+        }
       }
     },
   },
